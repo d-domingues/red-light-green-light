@@ -1,0 +1,10 @@
+html,
+body {
+  margin: auto;
+  font-family: sans-serif;
+  background-color: black;
+}
+
+* {
+  box-sizing: border-box;
+}
