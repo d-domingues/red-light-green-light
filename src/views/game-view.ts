@@ -1,10 +1,10 @@
-import '../components/glowing-light.js';
-import '../components/step-buttons.js';
-
 import { Router } from '@vaadin/router';
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-
+import { ref } from 'lit/directives/ref.js';
+import { fromEvent, pluck, tap } from 'rxjs';
+import '../components/glowing-light.js';
+import '../components/step-buttons.js';
 import { fetchSessionPlayer } from '../storage.js';
 import { ToastUi } from './../components/toast-ui';
 import { Player } from './../models/player';
@@ -43,25 +43,37 @@ export class GameView extends LitElement {
     }, timer);
   }
 
-  onStep({ detail }: { detail: 'forward' | 'backward' }) {
-    if (!this.active) {
-      this.score = 0;
-      return;
-    }
-
-    if (detail === 'forward') {
-      this.score++;
-      return;
-    }
-
-    if (this.score > 0) {
-      this.score--;
-    }
-  }
-
   // avoids useless code to run
   disconnectedCallback() {
     clearTimeout(this.toId);
+  }
+
+  setReactive(el?: Element) {
+    if (!el) {
+      return;
+    }
+
+    fromEvent(el, 'step')
+      .pipe(
+        pluck('detail'),
+        tap((step) => {
+          if (!this.active) {
+            this.score = 0;
+            ToastUi.present('Your score has been reseted ☠️', 'I');
+            return;
+          }
+
+          if (step === 'forward') {
+            this.score++;
+            return;
+          }
+
+          if (this.score > 0) {
+            this.score--;
+          }
+        })
+      )
+      .subscribe();
   }
 
   render() {
@@ -77,7 +89,7 @@ export class GameView extends LitElement {
 
         <glowing-light ?active=${this.active}></glowing-light>
         <h3>Score: ${this.score}</h3>
-        <step-buttons @step=${this.onStep}></step-buttons>
+        <step-buttons ${ref(this.setReactive)}></step-buttons>
       </main>
     `;
   }
