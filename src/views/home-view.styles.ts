@@ -9,7 +9,7 @@ export const homeViewStyles = css`
     align-items: center;
   }
 
-  #join-btn {
+  button {
     position: relative;
     background-color: #4b52d6;
     border: none;
@@ -25,7 +25,7 @@ export const homeViewStyles = css`
     margin: 20px;
   }
 
-  #join-btn:after {
+  button:after {
     content: '';
     background: #f1f1f1;
     display: block;
@@ -38,7 +38,7 @@ export const homeViewStyles = css`
     transition: all 0.8s;
   }
 
-  #join-btn:active:after {
+  button:active:after {
     padding: 0;
     margin: 0;
     opacity: 1;

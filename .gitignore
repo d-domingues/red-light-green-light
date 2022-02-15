@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 types
+test/src
+test/test
 
 # Editor directories and files
 .vscode/*

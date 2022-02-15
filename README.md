@@ -48,6 +48,11 @@ go to [http://localhost:3000](http://localhost:3000)
 - `npm run start`
 - go to [http://localhost:3000](http://localhost:3000)
 
+## locally preview production build
+
+- `npm run preview`
+- go to [http://localhost:5000](http://localhost:5000)
+
 ## Production
 
 - `npm run build`

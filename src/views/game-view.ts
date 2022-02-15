@@ -1,10 +1,11 @@
-import { Router } from '@vaadin/router';
+import { PreventAndRedirectCommands, RouterLocation } from '@vaadin/router';
 import { html, LitElement } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { ref } from 'lit/directives/ref.js';
 import { fromEvent, pluck, tap } from 'rxjs';
 import '../components/glowing-light.js';
 import '../components/step-buttons.js';
+import '../components/toolbar-header.js';
 import { fetchSessionPlayer, submitPlayer } from '../storage.js';
 import { ToastUi } from './../components/toast-ui';
 import { Player } from './../models/player';
@@ -19,18 +20,16 @@ export class GameView extends LitElement {
   private toId!: NodeJS.Timeout;
   private player!: Player;
 
-  constructor() {
-    super();
-    fetchSessionPlayer().then(
-      (p) => {
-        this.player = p;
-        this.start();
-      },
-      () => {
-        ToastUi.present('No player has joined', 'E');
-        Router.go('home');
-      }
-    );
+  async onBeforeEnter(loc: RouterLocation, cmds: PreventAndRedirectCommands) {
+    try {
+      this.player = await fetchSessionPlayer();
+      this.start();
+    } catch (error) {
+      ToastUi.present('No player has joined', 'E');
+      return cmds.prevent();
+    }
+
+    return true;
   }
 
   start() {
@@ -89,10 +88,7 @@ export class GameView extends LitElement {
     const { name, topScore, score } = this.player;
 
     return html`
-      <header>
-        <span id="player-welcome"> Hi ${name} </span>
-        <img id="exit-btn" src="exit.svg" @click=${() => Router.go('home')} />
-      </header>
+      <toolbar-header text=${'Hi ' + name}></toolbar-header>
       <main>
         <h3>High Score: ${topScore}</h3>
         <glowing-light color=${this.color}></glowing-light>

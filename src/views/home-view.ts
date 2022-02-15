@@ -1,6 +1,6 @@
 import { Router } from '@vaadin/router';
 import { html, LitElement } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
+import { customElement, query } from 'lit/decorators.js';
 import '../components/input-field.js';
 import { InputField } from '../components/input-field.js';
 import { setSessionPlayerName } from '../storage.js';
@@ -11,29 +11,29 @@ import { homeViewStyles } from './home-view.styles.js';
 export class HomeView extends LitElement {
   static styles = homeViewStyles;
 
-  @property() router!: Router;
   @query('input-field') inputField!: InputField;
 
-  onSubmitPlayer() {
-    // name validations
-    const name = this.inputField.value;
-    const isValid = /^[A-Ña-ñ0-9]{0,10}$/.test(name);
+  pattern = /^[A-Ña-ñ0-9]{0,10}$/;
 
-    if (!isValid) {
+  onJoin() {
+    if (this.inputField.invalid) {
       ToastUi.present('Inser a valid player name', 'W');
       return;
     }
 
-    // redirect to game view
+    // stores user in session
+    const name = this.inputField.value;
     setSessionPlayerName(name);
+    // redirect to game view
     Router.go('game');
   }
 
   render() {
     return html`
       <h3 id="label-create-player">Create a new Player</h3>
-      <input-field label="Name" @enterPress=${this.onSubmitPlayer}></input-field>
-      <button id="join-btn" @click=${this.onSubmitPlayer}>JOIN</button>
+      <input-field label="Name" .pattern=${this.pattern} @enterPress=${this.onJoin}></input-field>
+      <button id="join-btn" @click=${this.onJoin}>JOIN</button>
+      <button id="ranking-btn" @click=${() => Router.go('ranking')}>Ranking</button>
     `;
   }
 }

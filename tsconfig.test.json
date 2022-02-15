@@ -1,0 +1,13 @@
+{
+  "include": ["test/*.ts"],
+  "exclude": [],
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "rootDir": "./",
+    "outDir": "./test",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true
+  }
+}

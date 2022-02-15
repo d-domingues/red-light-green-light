@@ -1,10 +1,11 @@
 import { css, html, LitElement } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 @customElement('input-field')
 export class InputField extends LitElement {
   static styles = css`
-    .material-textfield {
+    .container {
       position: relative;
     }
 
@@ -21,7 +22,9 @@ export class InputField extends LitElement {
       transition: 0.1s ease-out;
       transform-origin: left top;
       pointer-events: none;
+      background: black;
     }
+
     input {
       font-size: 1rem;
       outline: none;
@@ -30,15 +33,27 @@ export class InputField extends LitElement {
       padding: 1rem 0.7rem;
       color: gray;
       transition: 0.1s ease-out;
+      background: black;
     }
+
     input:focus {
       border-color: #6200ee;
     }
+
+    .invalid input:focus {
+      border-color: #d50000;
+    }
+
     input:focus + label {
       color: #6200ee;
       top: 0;
       transform: translateY(-50%) scale(0.9);
     }
+
+    .invalid input:focus + label {
+      color: #d50000;
+    }
+
     input:not(:placeholder-shown) + label {
       top: 0;
       transform: translateY(-50%) scale(0.9);
@@ -46,16 +61,21 @@ export class InputField extends LitElement {
   `;
 
   @property() label = '';
+  @property() pattern!: RegExp;
+  @state() invalid = false;
   @query('input') input!: HTMLInputElement;
 
   onkeyup = (e: KeyboardEvent) => {
+    this.invalid = this.pattern && !this.pattern.test(this.value);
+
     if (e.key === 'Enter') {
-      this.dispatchEvent(new Event('enterPress'));
+      this.dispatchEvent(new CustomEvent('enterPress', { detail: this.value }));
     }
   };
 
   set value(value) {
     this.input.value = value;
+    this.invalid = this.pattern && !this.pattern.test(this.value);
   }
 
   get value() {
@@ -63,8 +83,10 @@ export class InputField extends LitElement {
   }
 
   render() {
+    const classes = { container: true, invalid: this.invalid };
+
     return html`
-      <div class="material-textfield">
+      <div class=${classMap(classes)}>
         <input placeholder=" " type="text" />
         <label>${this.label}</label>
       </div>
