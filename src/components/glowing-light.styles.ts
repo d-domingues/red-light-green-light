@@ -13,7 +13,7 @@ export const glowingLightStyles = css`
     box-shadow: rgb(177 0 0) 0px 0px 12px 12px;
   }
 
-  #light.active {
+  #light.green {
     background: rgb(30 225 32);
     box-shadow: rgb(38 203 40) 0 0 12px 12px;
     animation: glow 1s infinite alternate;

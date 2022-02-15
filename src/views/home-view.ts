@@ -17,7 +17,7 @@ export class HomeView extends LitElement {
   onSubmitPlayer() {
     // name validations
     const name = this.inputField.value;
-    const isValid = /^[A-Ña-ñ0-9]+$/.test(name);
+    const isValid = /^[A-Ña-ñ0-9]{0,10}$/.test(name);
 
     if (!isValid) {
       ToastUi.present('Inser a valid player name', 'W');
