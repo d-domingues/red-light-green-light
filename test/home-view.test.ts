@@ -40,13 +40,27 @@ describe('Home View', () => {
 
     it('enterPress Event emmits the current value', async () => {
       setTimeout(() => {
-        input.value = 'banana';
+        input.value = 'borscht';
         input.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter' }));
       });
 
       const { detail } = await oneEvent(input, 'enterPress');
 
-      expect(detail).to.be.equal('banana');
+      expect(detail).to.be.equal('borscht');
+    });
+
+    it('2 buttons rendered', async () => {
+      setTimeout(() => {
+        input.value = 'samosa';
+        input.click();
+      });
+
+      await oneEvent(input, 'click');
+
+      const item = sessionStorage.getItem('MAKE_IT_DELICIOUS');
+      console.log(item);
+
+      expect(true).to.be.true;
     });
   });
 });

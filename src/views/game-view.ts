@@ -22,6 +22,7 @@ export class GameView extends LitElement {
 
   async onBeforeEnter(loc: RouterLocation, cmds: PreventAndRedirectCommands) {
     try {
+      loc;
       this.player = await fetchSessionPlayer();
       this.start();
     } catch (error) {
