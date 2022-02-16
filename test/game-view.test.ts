@@ -2,7 +2,6 @@ import { expect, fixture } from '@open-wc/testing';
 import { html } from 'lit';
 import '../src/views/game-view.js';
 import { GameView } from '../src/views/game-view.js';
-import '../src/views/home-view.js';
 
 describe('Game View', () => {
   let el: GameView;

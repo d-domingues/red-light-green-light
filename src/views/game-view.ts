@@ -1,11 +1,14 @@
-import { PreventAndRedirectCommands, RouterLocation } from '@vaadin/router';
-import { html, LitElement } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { ref } from 'lit/directives/ref.js';
-import { fromEvent, pluck, tap } from 'rxjs';
 import '../components/glowing-light.js';
 import '../components/step-buttons.js';
 import '../components/toolbar-header.js';
+
+import { PreventAndRedirectCommands, RouterLocation } from '@vaadin/router';
+import { Howl } from 'howler';
+import { html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { ref } from 'lit/directives/ref.js';
+import { BehaviorSubject, fromEvent, pluck, scan, Subscription, tap, withLatestFrom } from 'rxjs';
+
 import { fetchSessionPlayer, submitPlayer } from '../storage.js';
 import { ToastUi } from './../components/toast-ui';
 import { Player } from './../models/player';
@@ -15,16 +18,18 @@ import { gameViewStyles } from './game-view.styles.js';
 export class GameView extends LitElement {
   static styles = gameViewStyles;
 
-  @state() private color: 'red' | 'green' = 'red';
-
-  private toId!: NodeJS.Timeout;
   private player!: Player;
+  private toId!: NodeJS.Timeout;
+  private audio = new Howl({ rate: 0.9, src: ['red-light-green-light-song.mp3'], loop: true });
+
+  private lightSubject = new BehaviorSubject<'red' | 'green'>('red');
+  private subscription!: Subscription;
 
   async onBeforeEnter(loc: RouterLocation, cmds: PreventAndRedirectCommands) {
     try {
       loc;
       this.player = await fetchSessionPlayer();
-      this.start();
+      this.setLight('green');
     } catch (error) {
       ToastUi.present('No player has joined', 'E');
       return cmds.prevent();
@@ -33,18 +38,11 @@ export class GameView extends LitElement {
     return true;
   }
 
-  start() {
-    this.color = 'green';
-    const timer = Math.max(10000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
-    this.toId = setTimeout(() => {
-      this.color = 'red';
-      setTimeout(() => this.start(), 3000);
-    }, timer);
-  }
-
   // avoids useless code to run
   disconnectedCallback() {
+    this.audio.stop();
     clearTimeout(this.toId);
+    this.subscription?.unsubscribe();
   }
 
   init(el?: Element) {
@@ -52,37 +50,58 @@ export class GameView extends LitElement {
       return;
     }
 
-    fromEvent(el, 'step')
+    const step$ = fromEvent<CustomEvent>(el, 'step').pipe(pluck('detail'));
+
+    const light$ = this.lightSubject.pipe(
+      tap((light) => {
+        this.audio[light === 'green' ? 'play' : 'stop']();
+        this.requestUpdate();
+      })
+    );
+
+    this.subscription = step$
       .pipe(
-        pluck('detail'),
-        tap((step) => {
-          if (this.color === 'red') {
-            this.player.score = 0;
+        withLatestFrom(light$),
+        scan((player, [step, color]) => {
+          if (color === 'red') {
+            player.score = 0;
             ToastUi.present('Your score has been reseted ☠️', 'I');
-            return;
+            return player;
           }
 
           if (step === 'forward') {
-            this.player.score++;
+            player.score++;
 
-            if (this.player.score > this.player.topScore) {
-              this.player.topScore = this.player.score;
+            if (player.score > player.topScore) {
+              player.topScore = player.score;
             }
 
-            return;
+            return player;
           }
 
-          if (this.player.score > 0) {
-            this.player.score--;
+          if (player.score > 0) {
+            player.score--;
           }
-        }),
-        tap(() => {
-          submitPlayer(this.player);
-          this.requestUpdate();
-        })
+
+          return player;
+        }, this.player)
       )
-      // no need to unsubscribe to a stream that is ONLY triggered by user interactions
-      .subscribe();
+      .subscribe((player) => {
+        this.player = player;
+        submitPlayer(this.player);
+        this.requestUpdate();
+      });
+  }
+
+  setLight(color: 'red' | 'green') {
+    this.lightSubject.next(color);
+
+    if (color === 'red') {
+      this.toId = setTimeout(() => this.setLight('green'), 3000);
+    } else {
+      const timer = Math.max(10000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
+      this.toId = setTimeout(() => this.setLight('red'), timer);
+    }
   }
 
   render() {
@@ -92,7 +111,7 @@ export class GameView extends LitElement {
       <toolbar-header text=${'Hi ' + name}></toolbar-header>
       <main>
         <h3>High Score: ${topScore}</h3>
-        <glowing-light color=${this.color}></glowing-light>
+        <glowing-light color=${this.lightSubject.value}></glowing-light>
         <h3>Score: ${score}</h3>
         <step-buttons ${ref(this.init)}></step-buttons>
       </main>

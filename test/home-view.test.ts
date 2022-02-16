@@ -49,18 +49,11 @@ describe('Home View', () => {
       expect(detail).to.be.equal('borscht');
     });
 
-    it('2 buttons rendered', async () => {
-      setTimeout(() => {
-        input.value = 'samosa';
-        input.click();
-      });
-
-      await oneEvent(input, 'click');
-
+    it('sessionStorage Read and Wright', async () => {
+      input.value = 'samosa';
+      el.onJoin();
       const item = sessionStorage.getItem('MAKE_IT_DELICIOUS');
-      console.log(item);
-
-      expect(true).to.be.true;
+      expect(item).to.be.be.equal('Delicious samosa');
     });
   });
 });

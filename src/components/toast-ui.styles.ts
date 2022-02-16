@@ -18,7 +18,7 @@ export const toastUiStyles = css`
     font-family: system-ui, sans-serif;
     color: white;
     background: green;
-    max-inline-size: min(25ch, 90vw);
+    max-inline-size: min(30ch, 90vw);
     padding-block: 0.5ch;
     padding-inline: 1ch;
     border-radius: 3px;

@@ -1,7 +1,8 @@
-import { Route } from '@vaadin/router';
 import './views/game-view.js';
 import './views/home-view.js';
 import './views/ranking-view.js';
+
+import { Route } from '@vaadin/router';
 
 export const routes: Route[] = [
   { path: '/', redirect: '/home' },
