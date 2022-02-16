@@ -20,6 +20,7 @@ export default {
         importMap: {
           imports: {
             '/src/storage.js': '/test/storage.mock.js',
+            howler: '/test/storage.mock.js',
           },
         },
       },

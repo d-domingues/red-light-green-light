@@ -1,14 +1,12 @@
-import '../components/glowing-light.js';
-import '../components/step-buttons.js';
-import '../components/toolbar-header.js';
-
 import { PreventAndRedirectCommands, RouterLocation } from '@vaadin/router';
 import { Howl } from 'howler';
 import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { ref } from 'lit/directives/ref.js';
 import { BehaviorSubject, fromEvent, pluck, scan, Subscription, tap, withLatestFrom } from 'rxjs';
-
+import '../components/glowing-light.js';
+import '../components/step-buttons.js';
+import '../components/toolbar-header.js';
 import { fetchSessionPlayer, submitPlayer } from '../storage.js';
 import { ToastUi } from './../components/toast-ui';
 import { Player } from './../models/player';
@@ -18,12 +16,12 @@ import { gameViewStyles } from './game-view.styles.js';
 export class GameView extends LitElement {
   static styles = gameViewStyles;
 
-  private player!: Player;
-  private toId!: NodeJS.Timeout;
-  private audio = new Howl({ rate: 0.9, src: ['red-light-green-light-song.mp3'], loop: true });
+  player!: Player;
+  audio = new Howl({ rate: 0.9, src: ['red-light-green-light-song.mp3'], loop: true });
+  toId!: NodeJS.Timeout;
 
-  private lightSubject = new BehaviorSubject<'red' | 'green'>('red');
-  private subscription!: Subscription;
+  lightSubject = new BehaviorSubject<'red' | 'green'>('red');
+  subscription!: Subscription;
 
   async onBeforeEnter(loc: RouterLocation, cmds: PreventAndRedirectCommands) {
     try {
