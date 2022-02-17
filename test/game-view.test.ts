@@ -1,4 +1,4 @@
-import { fixture } from '@open-wc/testing';
+import { expect, fixture } from '@open-wc/testing';
 import { Router } from '@vaadin/router';
 import { html } from 'lit';
 import '../src/views/game-view.js';
@@ -23,7 +23,7 @@ describe('Game View', () => {
     router.unsubscribe();
   });
 
-  /*   it('should be rendered', () => {
+  it('should be rendered', () => {
     expect(el.tagName).to.match(/game-view/i);
     expect(el.renderRoot.children).to.have.lengthOf(2);
   });
@@ -34,5 +34,5 @@ describe('Game View', () => {
     expect(el.player.name).to.be.equal('Mr. Foo Bar');
     expect(el.player.score).to.be.equal(10);
     expect(el.player.topScore).to.be.equal(100);
-  }); */
+  });
 });

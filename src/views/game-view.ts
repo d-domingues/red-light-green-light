@@ -1,14 +1,12 @@
-import '../components/glowing-light.js';
-import '../components/step-buttons.js';
-import '../components/toolbar-header.js';
-
 import { PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { Howl } from 'howler';
 import { html, LitElement } from 'lit';
-import { customElement } from 'lit/decorators.js';
-import { ref } from 'lit/directives/ref.js';
+import { customElement, query } from 'lit/decorators.js';
 import { BehaviorSubject, fromEvent, pluck, scan, Subscription, tap, withLatestFrom } from 'rxjs';
-
+import '../components/glowing-light.js';
+import '../components/step-buttons.js';
+import { StepButtons } from '../components/step-buttons.js';
+import '../components/toolbar-header.js';
 import { fetchSessionPlayer, submitPlayer } from '../storage.js';
 import { ToastUi } from './../components/toast-ui';
 import { Player } from './../models/player';
@@ -24,6 +22,8 @@ export class GameView extends LitElement {
 
   lightSubject = new BehaviorSubject<'red' | 'green'>('red');
   subscription!: Subscription;
+
+  @query('step-buttons') stepButtons!: StepButtons;
 
   async onBeforeEnter(loc: RouterLocation, cmds: PreventAndRedirectCommands) {
     try {
@@ -45,15 +45,14 @@ export class GameView extends LitElement {
     this.subscription?.unsubscribe();
   }
 
-  init(el?: Element) {
-    if (!el) {
+  firstUpdated() {
+    if (!this.stepButtons) {
       ToastUi.present('Unexpected error', 'E');
-      this.disconnectedCallback();
       Router.go('home');
       return;
     }
 
-    const step$ = fromEvent<CustomEvent>(el, 'step').pipe(pluck('detail'));
+    const step$ = fromEvent<CustomEvent>(this.stepButtons, 'step').pipe(pluck('detail'));
 
     const light$ = this.lightSubject.pipe(
       tap((light) => {
@@ -124,7 +123,7 @@ export class GameView extends LitElement {
         <h3>High Score: ${topScore}</h3>
         <glowing-light color=${this.lightSubject.value}></glowing-light>
         <h3>Score: ${score}</h3>
-        <step-buttons ${ref(this.init)}></step-buttons>
+        <step-buttons></step-buttons>
       </main>
     `;
   }
