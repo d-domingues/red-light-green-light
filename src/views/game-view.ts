@@ -17,7 +17,7 @@ export class GameView extends LitElement {
   static styles = gameViewStyles;
 
   player!: Player;
-  audio = new Howl({ src: ['red-light-green-light-song.mp3'] });
+  audio = new Howl({ src: ['red-light-green-light-song.mp3'], html5: true });
   toId!: NodeJS.Timeout;
 
   lightSubject = new BehaviorSubject<'red' | 'green'>('red');
@@ -103,13 +103,6 @@ export class GameView extends LitElement {
     } else {
       const timer = Math.max(10000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
       this.audio.rate(4500 / timer);
-
-      /*   setContext(Howler.ctx);
-      const pShift = new PitchShift(3);
-      Howler.masterGain.disconnect();
-      connect(Howler.masterGain, pShift);
-      pShift.toDestination(); */
-
       this.toId = setTimeout(() => this.setLight('red'), timer);
     }
   }

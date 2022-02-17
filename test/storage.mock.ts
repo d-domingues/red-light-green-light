@@ -1,5 +1,4 @@
 import { HowlOptions } from 'howler';
-
 import { Player } from '../src/models/player.js';
 
 export function setSessionPlayerName(name: string) {
@@ -18,3 +17,5 @@ export class Howl {
   play(spriteOrId?: string | number) {}
   stop(id?: number) {}
 }
+
+export const Howler = {};
