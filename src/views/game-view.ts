@@ -1,12 +1,14 @@
-import { PreventAndRedirectCommands, RouterLocation } from '@vaadin/router';
+import '../components/glowing-light.js';
+import '../components/step-buttons.js';
+import '../components/toolbar-header.js';
+
+import { PreventAndRedirectCommands, Router, RouterLocation } from '@vaadin/router';
 import { Howl } from 'howler';
 import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { ref } from 'lit/directives/ref.js';
 import { BehaviorSubject, fromEvent, pluck, scan, Subscription, tap, withLatestFrom } from 'rxjs';
-import '../components/glowing-light.js';
-import '../components/step-buttons.js';
-import '../components/toolbar-header.js';
+
 import { fetchSessionPlayer, submitPlayer } from '../storage.js';
 import { ToastUi } from './../components/toast-ui';
 import { Player } from './../models/player';
@@ -45,6 +47,8 @@ export class GameView extends LitElement {
 
   init(el?: Element) {
     if (!el) {
+      ToastUi.present('Unexpected error', 'E');
+      Router.go('home');
       return;
     }
 

@@ -56,8 +56,8 @@ describe('Home View', () => {
       const item = sessionStorage.getItem('MAKE_IT_DELICIOUS');
 
       const onJoin = sinon.spy(el, 'onJoin');
-      expect(item).to.be.be.equal('Delicious samosa');
       expect(onJoin).to.have.been.called;
+      expect(item).to.be.be.equal('Delicious samosa');
     });
   });
 });

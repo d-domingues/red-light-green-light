@@ -12,6 +12,7 @@ describe('Game View', () => {
     const router = new Router(outlet);
     await router.setRoutes([{ path: '/', component: 'game-view' }]);
     await router.ready;
+
     el = outlet.querySelector('game-view');
   });
 

@@ -1,5 +1,9 @@
-const CACHE_NAME = 'my-site-cache-v0';
-const urlsToCache = ['/', '/index.html', '/src/styles.css'];
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox-sw.js');
+
+workbox.precaching.precacheAndRoute(self.__precacheManifest || []);
+
+/* const CACHE_NAME = 'rlgl-cache-v0';
+const urlsToCache = ['/', 'public'];
 
 self.addEventListener('install', (ev) => {
   console.log('INSTALL', ev);
@@ -14,3 +18,4 @@ self.addEventListener('install', (ev) => {
 self.addEventListener('activate', (ev) => {
   console.log('ACTIVATE', ev);
 });
+ */

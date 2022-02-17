@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "npm run build && vite preview",
+    "preview": "npm run build && workbox generateSW workbox-config.js && vite preview",
     "test": "tsc -p tsconfig.test.json && wtr"
   },
   "dependencies": {

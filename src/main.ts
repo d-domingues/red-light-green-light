@@ -3,16 +3,12 @@ import { Router } from '@vaadin/router';
 import { routes } from './routes.js';
 
 export let router = new Router(document.body);
+router.setRoutes(routes);
 
-// initialize service worker
+// register service worker
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () =>
-    navigator.serviceWorker.register('./../sw.js').then(
-      (reg) => console.log('REGISTER', reg),
-      (err) => console.log(err)
-    )
+  navigator.serviceWorker.register('./sw10.js').then(
+    (reg) => console.log('REGISTER', reg),
+    (err) => console.log(err)
   );
 }
-
-router.setRoutes(routes);
-Router.go('home');
