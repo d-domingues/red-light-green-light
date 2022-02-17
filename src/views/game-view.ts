@@ -101,7 +101,7 @@ export class GameView extends LitElement {
     if (color === 'red') {
       this.toId = setTimeout(() => this.setLight('green'), 3000);
     } else {
-      const timer = Math.max(6000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
+      const timer = Math.max(10000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
       this.audio.rate(4500 / timer);
 
       /*   setContext(Howler.ctx);
