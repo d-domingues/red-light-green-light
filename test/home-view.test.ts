@@ -1,6 +1,5 @@
 import { expect, fixture, oneEvent } from '@open-wc/testing';
 import { html } from 'lit';
-import sinon from 'sinon';
 import { InputField } from '../src/components/input-field.js';
 import '../src/views/home-view.js';
 import { HomeView } from '../src/views/home-view.js';
@@ -55,8 +54,8 @@ describe('Home View', () => {
       el.onJoin();
       const item = sessionStorage.getItem('MAKE_IT_DELICIOUS');
 
-      const onJoin = sinon.spy(el, 'onJoin');
-      expect(onJoin).to.have.been.called;
+      /*      const onJoin = sinon.spy(el, 'onJoin');
+      expect(onJoin).to.have.been.called; */
       expect(item).to.be.be.equal('Delicious samosa');
     });
   });

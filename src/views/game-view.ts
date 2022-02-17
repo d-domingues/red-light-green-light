@@ -19,7 +19,7 @@ export class GameView extends LitElement {
   static styles = gameViewStyles;
 
   player!: Player;
-  audio = new Howl({ rate: 0.9, src: ['red-light-green-light-song.mp3'], loop: true });
+  audio = new Howl({ src: ['red-light-green-light-song.mp3'] });
   toId!: NodeJS.Timeout;
 
   lightSubject = new BehaviorSubject<'red' | 'green'>('red');
@@ -48,6 +48,7 @@ export class GameView extends LitElement {
   init(el?: Element) {
     if (!el) {
       ToastUi.present('Unexpected error', 'E');
+      this.disconnectedCallback();
       Router.go('home');
       return;
     }
@@ -101,7 +102,15 @@ export class GameView extends LitElement {
     if (color === 'red') {
       this.toId = setTimeout(() => this.setLight('green'), 3000);
     } else {
-      const timer = Math.max(10000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
+      const timer = Math.max(6000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
+      this.audio.rate(4500 / timer);
+
+      /*   setContext(Howler.ctx);
+      const pShift = new PitchShift(3);
+      Howler.masterGain.disconnect();
+      connect(Howler.masterGain, pShift);
+      pShift.toDestination(); */
+
       this.toId = setTimeout(() => this.setLight('red'), timer);
     }
   }
