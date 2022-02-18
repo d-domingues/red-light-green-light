@@ -50,13 +50,13 @@ export class GameView extends LitElement {
     this.player = fetchPlayer(playerName);
 
     const canPlay$ = this.interval$.pipe(
-      switchMap((duration) => timer(duration)),
+      switchMap((time) => timer(time).pipe()),
       map(() => {
         this.isGreen = !this.isGreen;
+        const next = this.isGreen ? Math.max(10000 - this.player.score, 2000) + Math.floor(Math.random() * 3001 - 1500) : 3000;
+        this.isGreen && this.audio.rate(4500 / next);
         this.audio[this.isGreen ? 'play' : 'stop']();
-        const timer = this.isGreen ? Math.max(10000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500) : 3000;
-        this.isGreen && this.audio.rate(4500 / timer);
-        this.interval$.next(timer);
+        this.interval$.next(next);
         return this.isGreen;
       })
     );
@@ -79,6 +79,7 @@ export class GameView extends LitElement {
             if (player.score > player.topScore) {
               player.topScore = player.score;
             }
+            cal;
 
             return player;
           }
