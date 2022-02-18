@@ -79,7 +79,6 @@ export class GameView extends LitElement {
             if (player.score > player.topScore) {
               player.topScore = player.score;
             }
-            cal;
 
             return player;
           }
