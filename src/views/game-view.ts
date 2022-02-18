@@ -22,8 +22,7 @@ export class GameView extends LitElement {
   @state() player!: Player;
 
   location: RouterLocation = router.location;
-  audio = new Howl({ src: ['/red-light-green-light-song.mp3'], html5: true });
-  interval$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  audio = new Howl({ src: ['/red-light-green-light-song.mp3'], html5: true, loop: true });
   subscription!: Subscription;
 
   // avoids useless code to run
@@ -48,18 +47,21 @@ export class GameView extends LitElement {
     }
 
     this.player = fetchPlayer(playerName);
+    const interval$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
-    const canPlay$ = this.interval$.pipe(
-      switchMap((time) => timer(time).pipe()),
+    const canPlay$ = interval$.pipe(
+      switchMap((time) => timer(time)),
       map(() => {
         this.isGreen = !this.isGreen;
         const next = this.isGreen ? Math.max(10000 - this.player.score, 2000) + Math.floor(Math.random() * 3001 - 1500) : 3000;
         this.isGreen && this.audio.rate(4500 / next);
         this.audio[this.isGreen ? 'play' : 'stop']();
-        this.interval$.next(next);
+        interval$.next(next);
         return this.isGreen;
       })
     );
+
+    // merge(fromEvent(this.audio, 'play').pipe(mapTo('play')), fromEvent(this.audio, 'stop').pipe(mapTo('stop'))).subscribe(console.log);
 
     const step$ = fromEvent<CustomEvent>(this.stepButtons, 'step').pipe(pluck('detail'));
 
@@ -68,8 +70,9 @@ export class GameView extends LitElement {
         withLatestFrom(canPlay$),
         scan((player, [step, canPlay]) => {
           if (!canPlay) {
-            player.score = 0;
             ToastUi.present('Your score has been reseted ☠️', 'I');
+            navigator.vibrate(500);
+            player.score = 0;
             return player;
           }
 
