@@ -3,7 +3,6 @@ import { html, LitElement } from 'lit';
 import { customElement, query } from 'lit/decorators.js';
 import '../components/input-field.js';
 import { InputField } from '../components/input-field.js';
-import { setSessionPlayerName } from '../storage.js';
 import { ToastUi } from './../components/toast-ui';
 import { homeViewStyles } from './home-view.styles.js';
 
@@ -21,11 +20,9 @@ export class HomeView extends LitElement {
       return;
     }
 
-    // stores user in session
-    const name = this.inputField.value;
-    setSessionPlayerName(name);
     // redirect to game view
-    Router.go('game');
+    const name = this.inputField.value;
+    Router.go(`game/${name}`);
   }
 
   render() {

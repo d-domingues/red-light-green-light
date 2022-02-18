@@ -7,7 +7,7 @@ import { Route } from '@vaadin/router';
 export const routes: Route[] = [
   { path: '/', redirect: '/home' },
   { path: '/home', component: 'home-view' },
-  { path: '/game', component: 'game-view' },
+  { path: '/game/:playerName', component: 'game-view' },
   { path: '/ranking', component: 'ranking-view' },
   { path: '(.*)', component: 'home-view' },
 ];

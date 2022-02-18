@@ -3,24 +3,25 @@ import { Router } from '@vaadin/router';
 import { html } from 'lit';
 import '../src/views/game-view.js';
 import { GameView } from '../src/views/game-view.js';
+import '../src/views/home-view.js';
 
 describe('Game View', () => {
   let el: GameView;
   let router: Router;
 
   beforeEach(async () => {
-    // console.log();
-
     const outlet = await fixture(html`<div></div>`);
     router = new Router(outlet);
-    await router.setRoutes([{ path: '/', component: 'game-view' }]);
+    router.setRoutes([
+      { path: '/', redirect: '/home' },
+      { path: '/home', component: 'home-view' },
+      { path: '/game/:playerName', component: 'game-view' },
+    ]);
+
+    Router.go('game/Mr. Foo Bar');
     await router.ready;
 
     el = outlet.querySelector('game-view');
-  });
-
-  afterEach(() => {
-    router.unsubscribe();
   });
 
   it('should be rendered', () => {

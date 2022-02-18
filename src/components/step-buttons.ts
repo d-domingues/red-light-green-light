@@ -23,8 +23,8 @@ export class StepButtons extends LitElement {
 
   render() {
     return html`
-      <img class="foot" src="left-foot.svg" @click=${() => this.onStep('L')} />
-      <img class="foot" src="right-foot.svg" @click=${() => this.onStep('R')} />
+      <img class="foot" src="/left-foot.svg" @click=${() => this.onStep('L')} />
+      <img class="foot" src="/right-foot.svg" @click=${() => this.onStep('R')} />
     `;
   }
 }

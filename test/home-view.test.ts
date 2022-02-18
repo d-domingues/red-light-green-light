@@ -49,14 +49,14 @@ describe('Home View', () => {
       expect(detail).to.be.equal('borscht');
     });
 
-    it('should Read and Wright sessionStorage', async () => {
+    /*     it('should Read and Wright sessionStorage', async () => {
       input.value = 'samosa';
       el.onJoin();
       const item = sessionStorage.getItem('MAKE_IT_DELICIOUS');
 
-      /*      const onJoin = sinon.spy(el, 'onJoin');
-      expect(onJoin).to.have.been.called; */
+           const onJoin = sinon.spy(el, 'onJoin');
+      expect(onJoin).to.have.been.called;
       expect(item).to.be.be.equal('Delicious samosa');
-    });
+    }); */
   });
 });

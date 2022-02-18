@@ -30,7 +30,7 @@ export class ToolbarHeader extends LitElement {
     return html`
       <header>
         <span id="player-welcome"> ${this.text} </span>
-        <img id="exit-btn" src="exit.svg" @click=${() => Router.go('home')} />
+        <img id="exit-btn" src="/exit.svg" @click=${() => Router.go('home')} />
       </header>
     `;
   }
