@@ -3,6 +3,7 @@ import { routes } from './routes.js';
 
 export let router = new Router(document.body);
 router.setRoutes(routes);
+screen?.orientation?.lock('portrait').catch(() => null);
 
 // register service worker
 /* if ('serviceWorker' in navigator) {

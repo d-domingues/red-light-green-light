@@ -1,8 +1,7 @@
 import { Router, RouterLocation } from '@vaadin/router';
-import { Howl } from 'howler';
 import { html, LitElement } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
-import { BehaviorSubject, fromEvent, map, pluck, scan, Subscription, switchMap, timer, withLatestFrom } from 'rxjs';
+import { fromEvent, mapTo, merge, pluck, scan, Subscription, withLatestFrom } from 'rxjs';
 import '../components/glowing-light.js';
 import '../components/step-buttons.js';
 import { StepButtons } from '../components/step-buttons.js';
@@ -18,16 +17,18 @@ export class GameView extends LitElement {
   static styles = gameViewStyles;
 
   @query('step-buttons') stepButtons!: StepButtons;
-  @state() isGreen = false;
   @state() player!: Player;
 
   location: RouterLocation = router.location;
-  audio = new Howl({ src: ['/red-light-green-light-song.mp3'], html5: true, loop: true });
+  audio = new Audio('/red-light-green-light-song.mp3');
+
+  toId!: NodeJS.Timeout;
   subscription!: Subscription;
 
   // avoids useless code to run
   disconnectedCallback() {
-    this.audio.stop();
+    this.audio.pause();
+    clearTimeout(this.toId);
     this.subscription?.unsubscribe();
   }
 
@@ -47,25 +48,11 @@ export class GameView extends LitElement {
     }
 
     this.player = fetchPlayer(playerName);
-    const interval$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
-    const canPlay$ = interval$.pipe(
-      switchMap((time) => timer(time)),
-      map(() => {
-        this.isGreen = !this.isGreen;
-        const next = this.isGreen ? Math.max(10000 - this.player.score, 2000) + Math.floor(Math.random() * 3001 - 1500) : 3000;
-        this.isGreen && this.audio.rate(4500 / next);
-        this.audio[this.isGreen ? 'play' : 'stop']();
-        interval$.next(next);
-        return this.isGreen;
-      })
-    );
+    const stepAction$ = fromEvent<CustomEvent>(this.stepButtons, 'step').pipe(pluck('detail'));
+    const canPlay$ = merge(fromEvent(this.audio, 'play').pipe(mapTo(true)), fromEvent(this.audio, 'ended').pipe(mapTo(false)));
 
-    // merge(fromEvent(this.audio, 'play').pipe(mapTo('play')), fromEvent(this.audio, 'stop').pipe(mapTo('stop'))).subscribe(console.log);
-
-    const step$ = fromEvent<CustomEvent>(this.stepButtons, 'step').pipe(pluck('detail'));
-
-    this.subscription = step$
+    this.subscription = stepAction$
       .pipe(
         withLatestFrom(canPlay$),
         scan((player, [step, canPlay]) => {
@@ -97,6 +84,20 @@ export class GameView extends LitElement {
         this.player = { ...player };
         submitPlayer(this.player);
       });
+
+    this.audio.onended = () => {
+      this.toId = setTimeout(() => this.play(), 3000);
+      this.requestUpdate();
+    };
+
+    this.play();
+  }
+
+  play() {
+    const period = Math.max(10000 - this.player.score * 100, 2000) + Math.floor(Math.random() * 3001 - 1500);
+    this.audio.playbackRate = 4500 / period;
+    this.audio.play();
+    this.requestUpdate();
   }
 
   render() {
@@ -104,7 +105,7 @@ export class GameView extends LitElement {
       <toolbar-header text=${'Hi ' + this.player?.name}></toolbar-header>
       <main>
         <h3>High Score: ${this.player?.topScore}</h3>
-        <glowing-light color=${this.isGreen ? 'green' : 'red'}></glowing-light>
+        <glowing-light color=${this.audio.ended ? 'red' : 'green'}></glowing-light>
         <h3>Score: ${this.player?.score}</h3>
         <step-buttons></step-buttons>
       </main>

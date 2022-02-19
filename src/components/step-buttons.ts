@@ -1,5 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { ToastUi } from './toast-ui';
 
 export type Foot = null | 'L' | 'R';
 
@@ -14,6 +15,24 @@ export class StepButtons extends LitElement {
   `;
 
   private previewsFoot: Foot = null;
+
+  constructor() {
+    super();
+
+    if (window.innerWidth >= 900 && window.innerHeight >= 700) {
+      window.addEventListener('keyup', this.arrowAction);
+      ToastUi.present('User keyboard arrows ⬅️ & ➡️', 'I');
+    }
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('keyup', this.arrowAction);
+  }
+
+  arrowAction = ({ key }: { key: string }) => {
+    if (key === 'ArrowLeft') this.onStep('L');
+    if (key === 'ArrowRight') this.onStep('R');
+  };
 
   onStep(foot: Foot) {
     const detail = foot !== this.previewsFoot ? 'forward' : 'backward';

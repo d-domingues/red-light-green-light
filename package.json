@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@vaadin/router": "^1.7.4",
-    "howler": "^2.2.3",
     "lit": "^2.0.2",
     "rxjs": "^7.5.4"
   },
