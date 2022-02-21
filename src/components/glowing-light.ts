@@ -6,7 +6,7 @@ import { glowingLightStyles } from './glowing-light.styles.js';
 export class GlowingLight extends LitElement {
   static styles = glowingLightStyles;
 
-  @property() color = 'red';
+  @property() color: 'red' | 'green' = 'red';
 
   render() {
     return html`<div id="light" class=${this.color}></div>`;

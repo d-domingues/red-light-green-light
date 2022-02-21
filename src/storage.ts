@@ -1,7 +1,7 @@
+import { collection, doc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
 import { Player } from './models/player.js';
 
 const PLAYERS = Object.freeze('PLAYERS');
-const SESSION_PLAYER_NAME = Object.freeze('SESSION_PLAYER_NAME');
 
 export function fetchPlayers(): Player[] {
   let players: Player[] = JSON.parse(localStorage.getItem(PLAYERS) ?? '[]');
@@ -23,19 +23,16 @@ export function submitPlayer(player: Player) {
   }
 
   localStorage.setItem(PLAYERS, JSON.stringify(players));
+
+  setPlayerDoc(player);
 }
 
-export function setSessionPlayerName(name: string) {
-  sessionStorage.setItem(SESSION_PLAYER_NAME, name);
+export async function getRankings() {
+  const rankingsCol = collection(getFirestore(), 'rankings');
+  const snapshot = await getDocs(rankingsCol);
+  return snapshot.docs.map((doc) => doc.data());
 }
 
-export function getSessionPlayerName() {
-  return sessionStorage.getItem(SESSION_PLAYER_NAME);
-}
-
-export function fetchSessionPlayer(): Promise<Player> {
-  return new Promise((res, rej) => {
-    const playerName = getSessionPlayerName();
-    playerName ? res(fetchPlayer(playerName)) : rej();
-  });
+export async function setPlayerDoc(player: Player) {
+  await setDoc(doc(getFirestore(), 'rankings', player.name), player);
 }

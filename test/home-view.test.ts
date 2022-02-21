@@ -1,5 +1,7 @@
-import { expect, fixture, oneEvent } from '@open-wc/testing';
+import { elementUpdated, expect, fixture, oneEvent } from '@open-wc/testing';
+import { sendKeys, sendMouse } from '@web/test-runner-commands';
 import { html } from 'lit';
+import { stub } from 'sinon';
 import { InputField } from '../src/components/input-field.js';
 import '../src/views/home-view.js';
 import { HomeView } from '../src/views/home-view.js';
@@ -21,6 +23,26 @@ describe('Home View', () => {
     expect(h3.textContent).to.be.equal('Create a new Player');
   });
 
+  describe('Join Button action', () => {
+    let joinBtn: HTMLButtonElement;
+
+    beforeEach(async () => {
+      joinBtn = el.shadowRoot.querySelector('#join-btn');
+    });
+
+    it('calls onJoin when a button is clicked', async () => {
+      const onJoin = stub(el, 'onJoin');
+
+      el.requestUpdate();
+      await elementUpdated(el);
+
+      const { x, y } = joinBtn.getBoundingClientRect();
+      await sendMouse({ type: 'click', position: [Math.floor(x + 1), Math.floor(y + 1)] });
+
+      expect(onJoin).to.have.been.calledOnce;
+    });
+  });
+
   describe('Input validations', () => {
     let input: InputField;
 
@@ -38,7 +60,7 @@ describe('Home View', () => {
       expect(input.invalid).to.true;
     });
 
-    it('enterPress Event emmits the current value', async () => {
+    it('emmits the current value on Enter keyup', async () => {
       setTimeout(() => {
         input.value = 'borscht';
         input.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter' }));
@@ -49,14 +71,26 @@ describe('Home View', () => {
       expect(detail).to.be.equal('borscht');
     });
 
-    /*     it('should Read and Wright sessionStorage', async () => {
-      input.value = 'samosa';
-      el.onJoin();
-      const item = sessionStorage.getItem('MAKE_IT_DELICIOUS');
+    it('calls onJoin on Enter keyup', async () => {
+      const onJoin = stub(el, 'onJoin');
 
-           const onJoin = sinon.spy(el, 'onJoin');
-      expect(onJoin).to.have.been.called;
-      expect(item).to.be.be.equal('Delicious samosa');
-    }); */
+      el.requestUpdate();
+      await elementUpdated(el);
+      input.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter' }));
+
+      expect(onJoin).to.have.been.calledOnce;
+    });
+
+    it('natively types into an input', async () => {
+      const keys = 'abc123';
+
+      input.focus();
+
+      await sendKeys({
+        type: keys,
+      });
+
+      expect(input.value).to.equal(keys);
+    });
   });
 });

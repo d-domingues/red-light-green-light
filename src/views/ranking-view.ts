@@ -1,8 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { until } from 'lit/directives/until.js';
 import '../components/toolbar-header.js';
-import { Player } from '../models/player.js';
-import { fetchPlayers } from '../storage.js';
+import { getRankings } from '../storage.js';
 
 @customElement('ranking-view')
 export class RankingView extends LitElement {
@@ -21,27 +21,28 @@ export class RankingView extends LitElement {
     }
   `;
 
-  players: Player[] = fetchPlayers();
-
   render() {
-    return html`
-      <toolbar-header text="Ranking"></toolbar-header>
-      <table>
-        <tr>
-          <th>Name</th>
-          <th>Score</th>
-        </tr>
-        ${this.players
-          .sort((a, b) => b.topScore - a.topScore)
-          .map(
-            ({ name, topScore }) => html`
-              <tr>
-                <td>${name}</td>
-                <td>${topScore}</td>
-              </tr>
-            `
-          )}
-      </table>
-    `;
+    return until(
+      getRankings().then(
+        (players) => html`
+          <toolbar-header text="Ranking"></toolbar-header>
+          <table>
+            <tr>
+              <th>Name</th>
+              <th>Score</th>
+            </tr>
+            ${players.map(
+              ({ name, topScore }) => html`
+                <tr>
+                  <td>${name}</td>
+                  <td>${topScore}</td>
+                </tr>
+              `
+            )}
+          </table>
+        `
+      ),
+      'Loading...'
+    );
   }
 }
