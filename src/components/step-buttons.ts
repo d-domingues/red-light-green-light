@@ -1,5 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, queryAll } from 'lit/decorators.js';
+
 import { ToastUi } from './toast-ui';
 
 export type Foot = null | 'L' | 'R';
@@ -10,11 +11,19 @@ export class StepButtons extends LitElement {
     .foot {
       margin: 14px;
       width: 20vw;
-      max-width: 80px;
+      max-width: 70px;
     }
 
     .foot:focus {
       transform: scale(0.95);
+    }
+
+    .foot[tabindex='0'] {
+      margin: 6px 14px 20px 6px;
+    }
+
+    .foot[tabindex='1'] {
+      margin: 6px 6px 20px 14px;
     }
   `;
 

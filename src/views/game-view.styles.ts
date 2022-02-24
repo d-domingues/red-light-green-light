@@ -10,6 +10,10 @@ export const gameViewStyles = css`
     position: absolute;
   }
 
+  game-canvas {
+    height: inherit;
+  }
+
   h3 {
     left: 20px;
     color: black;

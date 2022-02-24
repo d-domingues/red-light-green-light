@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { ref } from 'lit/directives/ref.js';
 import { Subject } from 'rxjs';
@@ -22,14 +22,6 @@ import { Doll, Soldier } from '../models/mesh-model';
 
 @customElement('game-canvas')
 export class GameCanvas extends LitElement {
-  static styles = css`
-    /*     canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-    } */
-  `;
-
   scene!: Scene;
   camera!: PerspectiveCamera;
   renderer!: WebGLRenderer;
@@ -42,6 +34,7 @@ export class GameCanvas extends LitElement {
 
   constructor() {
     super();
+    window.addEventListener('resize', this.setResponsiveSize, false);
 
     this.runRenderLoop();
     this.setScene();
@@ -49,25 +42,19 @@ export class GameCanvas extends LitElement {
     this.setLight();
     this.setGround();
     this.setSky();
-    this.loadModels().then(() => {
-      this.soldier.playAnimationAction(1);
-    });
-  }
-
-  async runSimulations() {
-    this.soldier.playAnimationAction(1);
-    await new Promise((r) => setTimeout(r, 2000));
-    this.doll.lookForward();
-    this.soldier.stop();
-    await new Promise((r) => setTimeout(r, 1000));
-    this.doll.lookBackwards();
-    this.soldier.start();
-    this.runSimulations();
+    this.loadModels().then(() => this.soldier.playAnimationAction(1));
   }
 
   disconnectedCallback() {
+    window.removeEventListener('resize', this.setResponsiveSize);
     this.daemon.complete();
   }
+
+  setResponsiveSize = () => {
+    this.camera!.aspect = window.innerWidth / (window.innerHeight - 48);
+    this.camera?.updateProjectionMatrix();
+    this.renderer?.setSize(window.innerWidth, window.innerHeight - 48);
+  };
 
   setScene() {
     this.scene = new Scene();
@@ -76,7 +63,7 @@ export class GameCanvas extends LitElement {
   }
 
   setCamera() {
-    this.camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    this.camera = new PerspectiveCamera(70, window.innerWidth / (window.innerHeight - 48), 1, 1000);
     this.camera.position.set(0, 8, 28);
     this.camera.lookAt(new Vector3(0, 8, 0));
   }
@@ -129,7 +116,7 @@ export class GameCanvas extends LitElement {
 
   setRenderer(canvas?: Element) {
     this.renderer = new WebGLRenderer({ canvas });
-    this.renderer.setSize(window.innerWidth, window.innerHeight - 52);
+    this.renderer.setSize(window.innerWidth, window.innerHeight - 48);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.outputEncoding = sRGBEncoding;
     this.renderer.shadowMap.enabled = true;
@@ -144,6 +131,18 @@ export class GameCanvas extends LitElement {
     this.daemon.next(null);
     this.renderer?.render(this.scene, this.camera);
   };
+
+  ///////////
+  async runSimulations() {
+    this.soldier.playAnimationAction(1);
+    await new Promise((r) => setTimeout(r, 2000));
+    this.doll.lookForward();
+    this.soldier.stop();
+    await new Promise((r) => setTimeout(r, 1000));
+    this.doll.lookBackwards();
+    this.soldier.start();
+    this.runSimulations();
+  }
 
   render() {
     return html`<canvas ${ref(this.setRenderer)}></canvas>`;
