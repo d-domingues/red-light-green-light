@@ -1,7 +1,9 @@
 import { Router, RouterLocation } from '@vaadin/router';
 import { html, LitElement } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
-import { fromEvent, mapTo, merge, pluck, scan, Subscription, withLatestFrom } from 'rxjs';
+import { fromEvent, mapTo, merge, pluck, scan, Subscription, tap, withLatestFrom } from 'rxjs';
+import '../components/game-canvas.js';
+import { GameCanvas } from '../components/game-canvas.js';
 import '../components/glowing-light.js';
 import '../components/step-buttons.js';
 import { StepButtons } from '../components/step-buttons.js';
@@ -17,6 +19,8 @@ export class GameView extends LitElement {
   static styles = gameViewStyles;
 
   @query('step-buttons') stepButtons!: StepButtons;
+  @query('game-canvas') gameCanvas!: GameCanvas;
+
   @state() player!: Player;
 
   location: RouterLocation = router.location;
@@ -49,8 +53,23 @@ export class GameView extends LitElement {
 
     this.player = fetchPlayer(playerName);
 
-    const stepAction$ = fromEvent<CustomEvent>(this.stepButtons, 'step').pipe(pluck('detail'));
-    const canPlay$ = merge(fromEvent(this.audio, 'play').pipe(mapTo(true)), fromEvent(this.audio, 'ended').pipe(mapTo(false)));
+    const stepAction$ = fromEvent<CustomEvent>(this.stepButtons, 'step').pipe(
+      pluck('detail'),
+      tap((step) => {
+        this.gameCanvas.soldier.updateMixer(step);
+      })
+    );
+
+    const canPlay$ = merge(
+      fromEvent(this.audio, 'play').pipe(
+        mapTo(true),
+        tap(() => this.gameCanvas.doll.lookBackwards())
+      ),
+      fromEvent(this.audio, 'ended').pipe(
+        mapTo(false),
+        tap(() => this.gameCanvas.doll.lookForward())
+      )
+    );
 
     this.subscription = stepAction$
       .pipe(
@@ -104,9 +123,13 @@ export class GameView extends LitElement {
     return html`
       <toolbar-header text=${'Hi ' + this.player?.name}></toolbar-header>
       <main>
-        <h3>High Score: ${this.player?.topScore}</h3>
+        <game-canvas></game-canvas>
+        <h3 id="high-score-label">
+          High Score: ${this.player?.topScore}
+          <br />
+          Score: ${this.player?.score}
+        </h3>
         <glowing-light color=${this.audio.ended ? 'red' : 'green'}></glowing-light>
-        <h3>Score: ${this.player?.score}</h3>
         <step-buttons></step-buttons>
       </main>
     `;

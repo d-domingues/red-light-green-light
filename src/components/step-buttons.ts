@@ -10,7 +10,7 @@ export class StepButtons extends LitElement {
     .foot {
       margin: 14px;
       width: 20vw;
-      max-width: 120px;
+      max-width: 80px;
     }
 
     .foot:focus {

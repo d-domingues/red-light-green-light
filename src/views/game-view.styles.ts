@@ -2,10 +2,27 @@ import { css } from 'lit';
 
 export const gameViewStyles = css`
   main {
-    margin: 20vh auto 0;
-    display: flex;
-    flex-direction: column;
-    width: max-content;
-    align-items: center;
+    position: relative;
+    height: calc(100vh - 46px);
+  }
+
+  main > * {
+    position: absolute;
+  }
+
+  h3 {
+    left: 20px;
+    color: black;
+  }
+
+  glowing-light {
+    top: 5%;
+    right: 10%;
+  }
+
+  step-buttons {
+    bottom: 10px;
+    left: 50%;
+    transform: translate(-51%);
   }
 `;

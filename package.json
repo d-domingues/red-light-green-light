@@ -4,17 +4,20 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "npm run build && workbox generateSW workbox-config.js && vite preview",
+    "preview:v1": "npm run build && vite preview",
+    "preview:v2": "npm run build && workbox generateSW workbox-config.js && vite preview",
     "test": "tsc -p tsconfig.test.json && wtr"
   },
   "dependencies": {
     "@vaadin/router": "^1.7.4",
     "firebase": "^9.6.7",
     "lit": "^2.0.2",
-    "rxjs": "^7.5.4"
+    "rxjs": "^7.5.4",
+    "three": "^0.137.5"
   },
   "devDependencies": {
     "@open-wc/testing": "^3.0.4",
+    "@types/three": "^0.137.0",
     "@web/dev-server-import-maps": "0.0.6",
     "@web/test-runner": "^0.13.27",
     "@web/test-runner-commands": "^0.6.1",

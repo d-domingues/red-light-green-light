@@ -3,7 +3,7 @@ import { customElement } from 'lit/decorators.js';
 import { DirectiveResult } from 'lit/directive.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { useAsyncTemplates } from '../directives/async-template-factory.js';
+import { useAsyncTemplates } from '../directives/async-template.factory.js';
 import { toastUiStyles } from './toast-ui.styles.js';
 
 const tmplFactory = (text: string, type: 'S' | 'E' | 'I' | 'W' = 'S', duration = 3000) => {

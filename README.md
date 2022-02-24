@@ -63,4 +63,10 @@ go to [http://localhost:3000](http://localhost:3000)
 
 # [Author](#author)
 
-- Author : David Domingues
+- Author: David Domingues
+
+# [Credits](#credits)
+
+- ThreeJS inspiration: Shuvo(https://github.com/0shuvo0/squidgame)
+- Squid Game Dool: Rzyas(https://sketchfab.com/rzyas)
+- Soldier: ThreeJs examples(https://threejs.org/examples/#webgl_animation_skinning_blending) from mixamo(https://www.mixamo.com)
